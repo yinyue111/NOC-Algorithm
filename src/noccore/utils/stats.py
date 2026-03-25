@@ -44,6 +44,13 @@ def safe_std(values: Iterable[float], default: float = 0.0) -> float:
     return float(np.std(arr))
 
 
+def safe_percentile(values: Iterable[float], percentile: float, default: float = 0.0) -> float:
+    arr = to_float_array(values)
+    if arr.size == 0:
+        return default
+    return float(np.percentile(arr, percentile))
+
+
 def rolling_mae(actual_values: Iterable[float], predicted_values: Iterable[float]) -> float:
     actual = to_float_array(actual_values)
     predicted = to_float_array(predicted_values)

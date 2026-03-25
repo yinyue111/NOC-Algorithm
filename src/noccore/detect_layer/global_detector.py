@@ -112,10 +112,16 @@ class GlobalAnomalyDetector:
 
     def _segment(self, prediction: PredictionResult) -> str:
         rolling_mean = float(prediction.features.get("rolling_mean_7d", prediction.predict_value))
-        rolling_std = float(prediction.features.get("rolling_std_7d", 0.0))
-        if prediction.predict_value >= rolling_mean + 0.25 * rolling_std:
+        if "rolling_p70_7d" in prediction.features and "rolling_p30_7d" in prediction.features:
+            rolling_p70 = float(prediction.features["rolling_p70_7d"])
+            rolling_p30 = float(prediction.features["rolling_p30_7d"])
+        else:
+            rolling_std = float(prediction.features.get("rolling_std_7d", 0.0))
+            rolling_p70 = rolling_mean + 0.25 * rolling_std
+            rolling_p30 = rolling_mean - 0.25 * rolling_std
+        if prediction.predict_value >= rolling_p70:
             return "peak"
-        if prediction.predict_value <= rolling_mean - 0.25 * rolling_std:
+        if prediction.predict_value <= rolling_p30:
             return "valley"
         return "mid"
 

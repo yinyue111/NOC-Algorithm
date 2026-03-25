@@ -6,7 +6,7 @@ from noccore.config.metric_registry import MetricMetadata
 from noccore.feature_layer.calendar_provider import CalendarProvider
 from noccore.schemas.metric import MetricPoint
 from noccore.schemas.prediction import PredictionResult
-from noccore.utils.stats import safe_mean, safe_std
+from noccore.utils.stats import safe_mean, safe_percentile, safe_std
 from noccore.utils.time import to_local_datetime
 
 
@@ -52,4 +52,6 @@ class FeatureService:
             "day_of_week": current_dt.weekday(),
             "rolling_mean_7d": rolling_mean,
             "rolling_std_7d": safe_std(recent_values, 0.0),
+            "rolling_p70_7d": safe_percentile(recent_values, 70, rolling_mean),
+            "rolling_p30_7d": safe_percentile(recent_values, 30, rolling_mean),
         }
